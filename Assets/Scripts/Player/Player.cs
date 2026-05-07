@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Video;
 
 
 public enum MovementState
@@ -56,6 +57,8 @@ public class Player : MonoBehaviour, IMovement
     private Vector3 camStandPos;
     private Vector3 camCrouchPos;
 
+    //Weapon
+    private IWeapon weapon;
 
     private Vector2 moveAxisValue;
     private Vector2 lookAxisValue;
@@ -65,7 +68,6 @@ public class Player : MonoBehaviour, IMovement
     private Camera cam;
     private CharacterController cc;
     private Animator camAnim;
-    private MovementState prevState;
 
     public void Crouch()
     {
@@ -250,6 +252,21 @@ public class Player : MonoBehaviour, IMovement
             StopLean();
     }
     
+    public void OnFire(InputAction.CallbackContext ctx)
+    {
+        if(ctx.performed)
+            weapon.Fire();
+
+        if(ctx.canceled)
+            weapon.StopFire();
+    }
+
+    public void OnReload(InputAction.CallbackContext ctx)
+    {
+        if(ctx.performed)
+            weapon.Reload();
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -265,6 +282,7 @@ public class Player : MonoBehaviour, IMovement
 
         camAnim = transform.GetComponentInChildren<Animator>();
 
+        weapon = transform.GetComponentInChildren<IWeapon>();
     }
 
     // Update is called once per frame
